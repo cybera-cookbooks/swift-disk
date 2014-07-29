@@ -1,0 +1,28 @@
+[main]
+cache_dir: <%= node[:swift_disk][:cache][:directory] %>
+mount_dir: <%= node[:swift_disk][:mount][:directory] %>
+
+source_bucket: <%= node[:swift_disk][:swift][:primary_bucket] %>
+
+# metadata_collection can either be prefetched on volume mount or can be fetched on demand from Swift
+# prefetch:
+#   This is good when you need the file system to be as responsive as possible or if you have a relatively
+#   small number of files. The catch here is that it can be very slow starting up while it requests metadata
+#   for each file. This also requires that you have sufficient memory to hold all the metadata.
+# demand:
+#   This ensures the fastest startup time and smaller memory footprint. This however comes at a cost.
+#   If the metadata for a file is not in memory then it must be fetched from Swift. This is a blocking operation
+#   and can potentially have a large impact on system performance. (though as more of the file system is cached
+#   the performance hit would decrease). This would be particularly bad for doing list operations (or equally any
+#   operation that operates on all the files in a given directory.)
+metadata_collection: <%= node[:swift_disk][:metadata_collection] %>
+
+swift.auth_url= <%= node[:swift][:auth_url] %>
+swift.username= <%= node[:swift][:username] %>
+swift.password= <%= node[:swift][:password] %>
+<% if node[:swift][:tenant_id] %>
+swift.tenant_id= <%= node[:swift][:tenant_id] %>
+<% else %>
+swift.tenant_name= <%= node[:swift][:tenant_name] %>
+<% end %>
+swift.region_name= <%= node[:swift][:region] %>
